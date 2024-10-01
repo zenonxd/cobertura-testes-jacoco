@@ -462,3 +462,22 @@ Classe TokenUtil, responsável por obter token de acesso.
 [Github](https://gist.github.com/oliveiralex/faeba65e214f7e6d738c01516ac7d6d2)
 
 ## Fixando tudo. Test coverage + testes unitarios na camada service (DSCommerce)
+
+Para utilizar jacoco no intelij:
+
+1. Importar a dependência acima
+2. Você pode colocar manualmente a exclusão de pacotes ou fazer abaixo como vou ensinar
+3. Settins >  Build, Execution, Deployment > Coverage e troca para Jacoco
+
+![alt text](image-6.png)
+
+4. Se quiser excluir pacotes e classes:
+
+![alt text](image-7.png)
+
+Excluindo manualmente classes e pacotes:
+
+![alt text](image-8.png)
+
+Assim, ao rodar o projeto e fechar é só gerar o relatório.
+

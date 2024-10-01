@@ -1,0 +1,266 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CustomPasswordAuthenticationProvider</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.devsuperior.dscommerce.config.customgrant</a>
+</div>
+
+<h1>Coverage Summary for Class: CustomPasswordAuthenticationProvider (com.devsuperior.dscommerce.config.customgrant)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CustomPasswordAuthenticationProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17,9%
+  </span>
+  <span class="absValue">
+    (12/67)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.devsuperior.dscommerce.config.customgrant;
+&nbsp;
+&nbsp;import java.security.Principal;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+&nbsp;import org.springframework.security.authentication.AuthenticationProvider;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.AuthenticationException;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.security.core.userdetails.UserDetailsService;
+&nbsp;import org.springframework.security.core.userdetails.UsernameNotFoundException;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.security.oauth2.core.AuthorizationGrantType;
+&nbsp;import org.springframework.security.oauth2.core.ClaimAccessor;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2AccessToken;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2Error;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2Token;
+&nbsp;import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+&nbsp;import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+&nbsp;import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
+&nbsp;import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
+&nbsp;import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
+&nbsp;import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+&nbsp;import org.springframework.security.oauth2.server.authorization.context.AuthorizationServerContextHolder;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.DefaultOAuth2TokenContext;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenContext;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+&nbsp;import org.springframework.util.Assert;
+&nbsp;
+&nbsp;public class CustomPasswordAuthenticationProvider implements AuthenticationProvider {
+&nbsp;
+&nbsp;	private static final String ERROR_URI = &quot;https://datatracker.ietf.org/doc/html/rfc6749#section-5.2&quot;;
+&nbsp;	private final OAuth2AuthorizationService authorizationService;
+&nbsp;	private final UserDetailsService userDetailsService;
+&nbsp;	private final OAuth2TokenGenerator&lt;? extends OAuth2Token&gt; tokenGenerator;
+&nbsp;	private final PasswordEncoder passwordEncoder;
+<b class="fc">&nbsp;	private String username = &quot;&quot;;</b>
+<b class="fc">&nbsp;	private String password = &quot;&quot;;</b>
+<b class="fc">&nbsp;	private Set&lt;String&gt; authorizedScopes = new HashSet&lt;&gt;();</b>
+&nbsp;
+&nbsp;	public CustomPasswordAuthenticationProvider(OAuth2AuthorizationService authorizationService,
+&nbsp;			OAuth2TokenGenerator&lt;? extends OAuth2Token&gt; tokenGenerator, 
+<b class="fc">&nbsp;			UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {</b>
+&nbsp;		
+<b class="fc">&nbsp;		Assert.notNull(authorizationService, &quot;authorizationService cannot be null&quot;);</b>
+<b class="fc">&nbsp;		Assert.notNull(tokenGenerator, &quot;TokenGenerator cannot be null&quot;);</b>
+<b class="fc">&nbsp;		Assert.notNull(userDetailsService, &quot;UserDetailsService cannot be null&quot;);</b>
+<b class="fc">&nbsp;		Assert.notNull(passwordEncoder, &quot;PasswordEncoder cannot be null&quot;);</b>
+<b class="fc">&nbsp;		this.authorizationService = authorizationService;</b>
+<b class="fc">&nbsp;		this.tokenGenerator = tokenGenerator;</b>
+<b class="fc">&nbsp;		this.userDetailsService = userDetailsService;</b>
+<b class="fc">&nbsp;		this.passwordEncoder = passwordEncoder;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@Override
+&nbsp;	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+&nbsp;		
+<b class="nc">&nbsp;		CustomPasswordAuthenticationToken customPasswordAuthenticationToken = (CustomPasswordAuthenticationToken) authentication;</b>
+<b class="nc">&nbsp;		OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(customPasswordAuthenticationToken);</b>
+<b class="nc">&nbsp;		RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();</b>
+<b class="nc">&nbsp;		username = customPasswordAuthenticationToken.getUsername();</b>
+<b class="nc">&nbsp;		password = customPasswordAuthenticationToken.getPassword();	</b>
+&nbsp;		
+<b class="nc">&nbsp;		UserDetails user = null;</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			user = userDetailsService.loadUserByUsername(username);</b>
+<b class="nc">&nbsp;		} catch (UsernameNotFoundException e) {</b>
+<b class="nc">&nbsp;			throw new OAuth2AuthenticationException(&quot;Invalid credentials&quot;);</b>
+&nbsp;		}
+&nbsp;				
+<b class="nc">&nbsp;		if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(username)) {</b>
+<b class="nc">&nbsp;			throw new OAuth2AuthenticationException(&quot;Invalid credentials&quot;);</b>
+&nbsp;		}
+&nbsp;		
+<b class="nc">&nbsp;		authorizedScopes = user.getAuthorities().stream()</b>
+<b class="nc">&nbsp;				.map(scope -&gt; scope.getAuthority())</b>
+<b class="nc">&nbsp;				.filter(scope -&gt; registeredClient.getScopes().contains(scope))</b>
+<b class="nc">&nbsp;				.collect(Collectors.toSet());</b>
+&nbsp;		
+&nbsp;		//-----------Create a new Security Context Holder Context----------
+<b class="nc">&nbsp;		OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="nc">&nbsp;		CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());</b>
+<b class="nc">&nbsp;		oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);</b>
+&nbsp;		
+<b class="nc">&nbsp;		var newcontext = SecurityContextHolder.createEmptyContext();</b>
+<b class="nc">&nbsp;		newcontext.setAuthentication(oAuth2ClientAuthenticationToken);</b>
+<b class="nc">&nbsp;		SecurityContextHolder.setContext(newcontext);		</b>
+&nbsp;		
+&nbsp;		//-----------TOKEN BUILDERS----------
+<b class="nc">&nbsp;		DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()</b>
+<b class="nc">&nbsp;				.registeredClient(registeredClient)</b>
+<b class="nc">&nbsp;				.principal(clientPrincipal)</b>
+<b class="nc">&nbsp;				.authorizationServerContext(AuthorizationServerContextHolder.getContext())</b>
+<b class="nc">&nbsp;				.authorizedScopes(authorizedScopes)</b>
+<b class="nc">&nbsp;				.authorizationGrantType(new AuthorizationGrantType(&quot;password&quot;))</b>
+<b class="nc">&nbsp;				.authorizationGrant(customPasswordAuthenticationToken);</b>
+&nbsp;		
+<b class="nc">&nbsp;		OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)</b>
+<b class="nc">&nbsp;				.attribute(Principal.class.getName(), clientPrincipal)</b>
+<b class="nc">&nbsp;				.principalName(clientPrincipal.getName())</b>
+<b class="nc">&nbsp;				.authorizationGrantType(new AuthorizationGrantType(&quot;password&quot;))</b>
+<b class="nc">&nbsp;				.authorizedScopes(authorizedScopes);</b>
+&nbsp;		
+&nbsp;		//-----------ACCESS TOKEN----------
+<b class="nc">&nbsp;		OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();</b>
+<b class="nc">&nbsp;		OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);</b>
+<b class="nc">&nbsp;		if (generatedAccessToken == null) {</b>
+<b class="nc">&nbsp;			OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,</b>
+&nbsp;					&quot;The token generator failed to generate the access token.&quot;, ERROR_URI);
+<b class="nc">&nbsp;			throw new OAuth2AuthenticationException(error);</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,</b>
+<b class="nc">&nbsp;				generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),</b>
+<b class="nc">&nbsp;				generatedAccessToken.getExpiresAt(), tokenContext.getAuthorizedScopes());</b>
+<b class="nc">&nbsp;		if (generatedAccessToken instanceof ClaimAccessor) {</b>
+<b class="nc">&nbsp;			authorizationBuilder.token(accessToken, (metadata) -&gt;</b>
+<b class="nc">&nbsp;					metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims()));</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			authorizationBuilder.accessToken(accessToken);</b>
+&nbsp;		}
+&nbsp;				
+<b class="nc">&nbsp;		OAuth2Authorization authorization = authorizationBuilder.build();</b>
+<b class="nc">&nbsp;		this.authorizationService.save(authorization);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean supports(Class&lt;?&gt; authentication) {
+<b class="nc">&nbsp;		return CustomPasswordAuthenticationToken.class.isAssignableFrom(authentication);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static OAuth2ClientAuthenticationToken getAuthenticatedClientElseThrowInvalidClient(Authentication authentication) {
+&nbsp;		
+<b class="nc">&nbsp;		OAuth2ClientAuthenticationToken clientPrincipal = null;</b>
+<b class="nc">&nbsp;		if (OAuth2ClientAuthenticationToken.class.isAssignableFrom(authentication.getPrincipal().getClass())) {</b>
+<b class="nc">&nbsp;			clientPrincipal = (OAuth2ClientAuthenticationToken) authentication.getPrincipal();</b>
+&nbsp;		}
+<b class="nc">&nbsp;		if (clientPrincipal != null &amp;&amp; clientPrincipal.isAuthenticated()) {</b>
+<b class="nc">&nbsp;			return clientPrincipal;</b>
+&nbsp;		}
+<b class="nc">&nbsp;		throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);</b>
+&nbsp;	}	
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-01 14:34</div>
+</div>
+</body>
+</html>

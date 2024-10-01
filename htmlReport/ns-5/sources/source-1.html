@@ -1,0 +1,169 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ControllerExceptionHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.devsuperior.dscommerce.controllers.handlers</a>
+</div>
+
+<h1>Coverage Summary for Class: ControllerExceptionHandler (com.devsuperior.dscommerce.controllers.handlers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ControllerExceptionHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6,7%
+  </span>
+  <span class="absValue">
+    (1/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.devsuperior.dscommerce.controllers.handlers;
+&nbsp;
+&nbsp;import java.time.Instant;
+&nbsp;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.validation.FieldError;
+&nbsp;import org.springframework.web.bind.MethodArgumentNotValidException;
+&nbsp;import org.springframework.web.bind.annotation.ControllerAdvice;
+&nbsp;import org.springframework.web.bind.annotation.ExceptionHandler;
+&nbsp;
+&nbsp;import com.devsuperior.dscommerce.dto.CustomErrorDTO;
+&nbsp;import com.devsuperior.dscommerce.dto.ValidationErrorDTO;
+&nbsp;import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
+&nbsp;import com.devsuperior.dscommerce.services.exceptions.ForbiddenException;
+&nbsp;import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
+&nbsp;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;
+&nbsp;@ControllerAdvice
+<b class="fc">&nbsp;public class ControllerExceptionHandler {</b>
+&nbsp;
+&nbsp;    @ExceptionHandler(ResourceNotFoundException.class)
+&nbsp;    public ResponseEntity&lt;CustomErrorDTO&gt; resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+<b class="nc">&nbsp;        HttpStatus status = HttpStatus.NOT_FOUND;</b>
+<b class="nc">&nbsp;        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(status).body(err);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(DatabaseException.class)
+&nbsp;    public ResponseEntity&lt;CustomErrorDTO&gt; database(DatabaseException e, HttpServletRequest request) {
+<b class="nc">&nbsp;        HttpStatus status = HttpStatus.BAD_REQUEST;</b>
+<b class="nc">&nbsp;        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(status).body(err);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(MethodArgumentNotValidException.class)
+&nbsp;    public ResponseEntity&lt;CustomErrorDTO&gt; methodArgumentNotValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
+<b class="nc">&nbsp;        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;</b>
+<b class="nc">&nbsp;        ValidationErrorDTO err = new ValidationErrorDTO(Instant.now(), status.value(), &quot;Dados inválidos&quot;, request.getRequestURI());</b>
+<b class="nc">&nbsp;        for (FieldError f : e.getBindingResult().getFieldErrors()) {</b>
+<b class="nc">&nbsp;            err.addError(f.getField(), f.getDefaultMessage());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return ResponseEntity.status(status).body(err);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @ExceptionHandler(ForbiddenException.class)
+&nbsp;    public ResponseEntity&lt;CustomErrorDTO&gt; forbidden(ForbiddenException e, HttpServletRequest request) {
+<b class="nc">&nbsp;        HttpStatus status = HttpStatus.FORBIDDEN;</b>
+<b class="nc">&nbsp;        CustomErrorDTO err = new CustomErrorDTO(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());</b>
+<b class="nc">&nbsp;        return ResponseEntity.status(status).body(err);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-01 14:34</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,336 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AuthorizationServerConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.devsuperior.dscommerce.config</a>
+</div>
+
+<h1>Coverage Summary for Class: AuthorizationServerConfig (com.devsuperior.dscommerce.config)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AuthorizationServerConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,1%
+  </span>
+  <span class="absValue">
+    (16/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (45/54)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AuthorizationServerConfig$$SpringCGLIB$$0</td>
+  </tr>
+  <tr>
+    <td class="name">AuthorizationServerConfig$$SpringCGLIB$$FastClass$$0</td>
+  </tr>
+  <tr>
+    <td class="name">AuthorizationServerConfig$$SpringCGLIB$$FastClass$$1</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    94,1%
+  </span>
+  <span class="absValue">
+    (16/17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83,3%
+  </span>
+  <span class="absValue">
+    (45/54)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.devsuperior.dscommerce.config;
+&nbsp;
+&nbsp;import java.security.KeyPair;
+&nbsp;import java.security.KeyPairGenerator;
+&nbsp;import java.security.interfaces.RSAPrivateKey;
+&nbsp;import java.security.interfaces.RSAPublicKey;
+&nbsp;import java.time.Duration;
+&nbsp;import java.util.List;
+&nbsp;import java.util.UUID;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.core.annotation.Order;
+&nbsp;import org.springframework.security.config.Customizer;
+&nbsp;import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+&nbsp;import org.springframework.security.core.userdetails.UserDetailsService;
+&nbsp;import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+&nbsp;import org.springframework.security.crypto.password.PasswordEncoder;
+&nbsp;import org.springframework.security.oauth2.core.AuthorizationGrantType;
+&nbsp;import org.springframework.security.oauth2.core.OAuth2Token;
+&nbsp;import org.springframework.security.oauth2.jwt.JwtDecoder;
+&nbsp;import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+&nbsp;import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationConsentService;
+&nbsp;import org.springframework.security.oauth2.server.authorization.InMemoryOAuth2AuthorizationService;
+&nbsp;import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
+&nbsp;import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+&nbsp;import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
+&nbsp;import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
+&nbsp;import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+&nbsp;import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+&nbsp;import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+&nbsp;import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
+&nbsp;import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+&nbsp;import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
+&nbsp;import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
+&nbsp;import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.JwtGenerator;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+&nbsp;import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+&nbsp;import org.springframework.security.web.SecurityFilterChain;
+&nbsp;
+&nbsp;import com.devsuperior.dscommerce.config.customgrant.CustomPasswordAuthenticationConverter;
+&nbsp;import com.devsuperior.dscommerce.config.customgrant.CustomPasswordAuthenticationProvider;
+&nbsp;import com.devsuperior.dscommerce.config.customgrant.CustomUserAuthorities;
+&nbsp;import com.nimbusds.jose.jwk.JWKSet;
+&nbsp;import com.nimbusds.jose.jwk.RSAKey;
+&nbsp;import com.nimbusds.jose.jwk.source.JWKSource;
+&nbsp;import com.nimbusds.jose.proc.SecurityContext;
+&nbsp;
+&nbsp;@Configuration
+<b class="fc">&nbsp;public class AuthorizationServerConfig {</b>
+&nbsp;
+&nbsp;	@Value(&quot;${security.client-id}&quot;)
+&nbsp;	private String clientId;
+&nbsp;
+&nbsp;	@Value(&quot;${security.client-secret}&quot;)
+&nbsp;	private String clientSecret;
+&nbsp;
+&nbsp;	@Value(&quot;${security.jwt.duration}&quot;)
+&nbsp;	private Integer jwtDurationSeconds;
+&nbsp;
+&nbsp;	@Autowired
+&nbsp;	private UserDetailsService userDetailsService;
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	@Order(2)
+&nbsp;	public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
+&nbsp;
+<b class="fc">&nbsp;		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);</b>
+&nbsp;
+&nbsp;		// @formatter:off
+<b class="fc">&nbsp;		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)</b>
+<b class="fc">&nbsp;			.tokenEndpoint(tokenEndpoint -&gt; tokenEndpoint</b>
+<b class="fc">&nbsp;				.accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())</b>
+<b class="fc">&nbsp;				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder())));</b>
+&nbsp;
+<b class="fc">&nbsp;		http.oauth2ResourceServer(oauth2ResourceServer -&gt; oauth2ResourceServer.jwt(Customizer.withDefaults()));</b>
+&nbsp;		// @formatter:on
+&nbsp;
+<b class="fc">&nbsp;		return http.build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public OAuth2AuthorizationService authorizationService() {
+<b class="fc">&nbsp;		return new InMemoryOAuth2AuthorizationService();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public OAuth2AuthorizationConsentService oAuth2AuthorizationConsentService() {
+<b class="fc">&nbsp;		return new InMemoryOAuth2AuthorizationConsentService();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public PasswordEncoder passwordEncoder() {
+<b class="fc">&nbsp;		return new BCryptPasswordEncoder();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public RegisteredClientRepository registeredClientRepository() {
+&nbsp;		// @formatter:off
+&nbsp;		RegisteredClient registeredClient = RegisteredClient
+<b class="fc">&nbsp;			.withId(UUID.randomUUID().toString())</b>
+<b class="fc">&nbsp;			.clientId(clientId)</b>
+<b class="fc">&nbsp;			.clientSecret(passwordEncoder().encode(clientSecret))</b>
+<b class="fc">&nbsp;			.scope(&quot;read&quot;)</b>
+<b class="fc">&nbsp;			.scope(&quot;write&quot;)</b>
+<b class="fc">&nbsp;			.authorizationGrantType(new AuthorizationGrantType(&quot;password&quot;))</b>
+<b class="fc">&nbsp;			.tokenSettings(tokenSettings())</b>
+<b class="fc">&nbsp;			.clientSettings(clientSettings())</b>
+<b class="fc">&nbsp;			.build();</b>
+&nbsp;		// @formatter:on
+&nbsp;
+<b class="fc">&nbsp;		return new InMemoryRegisteredClientRepository(registeredClient);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public TokenSettings tokenSettings() {
+&nbsp;		// @formatter:off
+<b class="fc">&nbsp;		return TokenSettings.builder()</b>
+<b class="fc">&nbsp;			.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)</b>
+<b class="fc">&nbsp;			.accessTokenTimeToLive(Duration.ofSeconds(jwtDurationSeconds))</b>
+<b class="fc">&nbsp;			.build();</b>
+&nbsp;		// @formatter:on
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public ClientSettings clientSettings() {
+<b class="fc">&nbsp;		return ClientSettings.builder().build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public AuthorizationServerSettings authorizationServerSettings() {
+<b class="fc">&nbsp;		return AuthorizationServerSettings.builder().build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public OAuth2TokenGenerator&lt;? extends OAuth2Token&gt; tokenGenerator() {
+<b class="fc">&nbsp;		NimbusJwtEncoder jwtEncoder = new NimbusJwtEncoder(jwkSource());</b>
+<b class="fc">&nbsp;		JwtGenerator jwtGenerator = new JwtGenerator(jwtEncoder);</b>
+<b class="fc">&nbsp;		jwtGenerator.setJwtCustomizer(tokenCustomizer());</b>
+<b class="fc">&nbsp;		OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();</b>
+<b class="fc">&nbsp;		return new DelegatingOAuth2TokenGenerator(jwtGenerator, accessTokenGenerator);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public OAuth2TokenCustomizer&lt;JwtEncodingContext&gt; tokenCustomizer() {
+<b class="fc">&nbsp;		return context -&gt; {</b>
+<b class="nc">&nbsp;			OAuth2ClientAuthenticationToken principal = context.getPrincipal();</b>
+<b class="nc">&nbsp;			CustomUserAuthorities user = (CustomUserAuthorities) principal.getDetails();</b>
+<b class="nc">&nbsp;			List&lt;String&gt; authorities = user.getAuthorities().stream().map(x -&gt; x.getAuthority()).toList();</b>
+<b class="nc">&nbsp;			if (context.getTokenType().getValue().equals(&quot;access_token&quot;)) {</b>
+&nbsp;				// @formatter:off
+<b class="nc">&nbsp;				context.getClaims()</b>
+<b class="nc">&nbsp;					.claim(&quot;authorities&quot;, authorities)</b>
+<b class="nc">&nbsp;					.claim(&quot;username&quot;, user.getUsername());</b>
+&nbsp;				// @formatter:on
+&nbsp;			}
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public JwtDecoder jwtDecoder(JWKSource&lt;SecurityContext&gt; jwkSource) {
+<b class="fc">&nbsp;		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public JWKSource&lt;SecurityContext&gt; jwkSource() {
+<b class="fc">&nbsp;		RSAKey rsaKey = generateRsa();</b>
+<b class="fc">&nbsp;		JWKSet jwkSet = new JWKSet(rsaKey);</b>
+<b class="fc">&nbsp;		return (jwkSelector, securityContext) -&gt; jwkSelector.select(jwkSet);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static RSAKey generateRsa() {
+<b class="fc">&nbsp;		KeyPair keyPair = generateRsaKey();</b>
+<b class="fc">&nbsp;		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();</b>
+<b class="fc">&nbsp;		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();</b>
+<b class="fc">&nbsp;		return new RSAKey.Builder(publicKey).privateKey(privateKey).keyID(UUID.randomUUID().toString()).build();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private static KeyPair generateRsaKey() {
+&nbsp;		KeyPair keyPair;
+&nbsp;		try {
+<b class="fc">&nbsp;			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(&quot;RSA&quot;);</b>
+<b class="fc">&nbsp;			keyPairGenerator.initialize(2048);</b>
+<b class="fc">&nbsp;			keyPair = keyPairGenerator.generateKeyPair();</b>
+<b class="nc">&nbsp;		} catch (Exception ex) {</b>
+<b class="nc">&nbsp;			throw new IllegalStateException(ex);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		return keyPair;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-10-01 14:34</div>
+</div>
+</body>
+</html>
