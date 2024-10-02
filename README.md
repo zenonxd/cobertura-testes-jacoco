@@ -481,3 +481,39 @@ Excluindo manualmente classes e pacotes:
 
 Assim, ao rodar o projeto e fechar é só gerar o relatório.
 
+## Teste Category por ID (service)
+
+![alt text](image-11.png)
+
+Mesmo de sempre, criar a pasta Service em Tests com o nome da classe "CategoryServiceTests".
+
+Usamos a anotação ``@ExtendWith(SpringExtension.class)``, para que não seja carregado o contexto da aplicação.
+
+E mockaremos o comportamento do nosso repository.
+
+Primeiro usar o @InjectMocks no CategoryService e depois o @Mock no repository, como já sabemos.
+
+Como o findAll do CategoryService utiliza uma Lista de Category, também importaremos a entidade Category e uma List<Category>.
+
+Para instanciarmos tudo, usaremos o método setUp, como sempre.
+
+Ao invés de instanciar ela manualmente podemos fazer uma Factory. Só criar um CategoryFactory no pacote Factory em Tests.
+
+Essa Factory pode ter uma Category já montada, uma que irá receber parâmetros e até uma CategoryDTO.
+
+![alt text](image-9.png)
+
+E agora no setUp podemos intanciá-la (colocar @BeforeEach no setUp).
+
+![alt text](image-10.png)
+
+Agora, simularemos o comportamento com o Mockito.
+
+![alt text](image-12.png)
+
+E agora, só criar o método. Como vimos na função acima, ela precisa retornar uma lista de CategoryDTO, nosso teste portanto, ficará assim!
+
+![alt text](image-13.png)
+
+
+
