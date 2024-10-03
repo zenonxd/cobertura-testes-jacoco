@@ -481,8 +481,7 @@ Excluindo manualmente classes e pacotes:
 
 Assim, ao rodar o projeto e fechar é só gerar o relatório.
 
-## Teste Category por ID (service)
-
+## Teste CategoryService por ID 
 ![alt text](image-11.png)
 
 Mesmo de sempre, criar a pasta Service em Tests com o nome da classe "CategoryServiceTests".
@@ -515,5 +514,151 @@ E agora, só criar o método. Como vimos na função acima, ela precisa retornar
 
 ![alt text](image-13.png)
 
+## Teste ProductService por ID
+
+![alt text](image-14.png)
+
+Um cenário temos um ID existente e no outro um não existente.
+
+Inicialmente, criar uma class de ProductServiceTests com a anotação do @ExtendWith novamente para não carregar o contexto.
+
+Importar nosso ProductService com @InjectMocks + o ProductRepository com @Mock.
+
+Precisamos mockar o comportamento esperado no setUp novamente.
+
+Como é possivel ver no método nós utilizamos um Id como parâmetro, bem como um Product. Daí é o de sempre, criar um existingId e nonExistingId + uma instância de Product.
+
+Podemos criar uma ProductFactory também. Destacando que o Product possui uma Category, então dentro da ProductFactory, podemos utilizar também a CategoryFactory!
+
+![alt text](image-15.png)
+
+### ProductService (ID existente)
+
+![alt text](image-16.png)
+
+### ProductService (ID inexistente)
+
+Simular o comportamento do repository, usando nonExistingId e retornando um Optional empty.
+
+![alt text](image-17.png)
+
+E dentro do método, fazer a assertion.
+
+![alt text](image-18.png)
+
+### Find Product by name
+
+Sempre observa o comportamento do método que queremos simular.
+
+Método ProductRepository
+
+![alt text](image-19.png)
+
+ProductService
+
+![alt text](image-21.png)
+
+Mock
+
+Instanciar um PageImpl do tipo Product
+
+![alt text](image-22.png)
+
+![alt text](image-23.png)
+
+Método 
+
+![alt text](image-24.png)
+
+### Inserindo new Product
+
+Método ProductService
+
+![alt text](image-25.png)
+
+Mock do save
+
+![alt text](image-26.png)
+
+Método
+
+!! Criar um ProductDTO no setUp
+
+![alt text](image-27.png)
+
+### Update Product
+
+Temos dois cenários, um de Id existente e outro de não existente.
+
+Método Update do Service, passamos um ID + o corpo do que será alterado
+
+![alt text](image-28.png)
+
+Como já mockamos o save, precisamos fazer o do getReferenceById.
+
+Mock
+
+![alt text](image-29.png)
+
+Método (Id existente)
+
+![alt text](image-30.png)
+
+Método (Id inexistente)
+
+![alt text](image-31.png)
+
+## Delete Product
+
+O delete tem o cenário que ele vai deletar com ID existente. Mas também tem as duas exceções (com id não existente e com id com produto dependente, ou seja, linkado em algum pedido).
+
+Método ProductService
+
+![alt text](image-32.png)
+
+Mock
+
+A primeira coisa é fazer os cenários do existsById e depois do deleteById.
+
+![alt text](image-33.png)
+
+Teste
+
+O cenário que o id existe, ele retorna nada, então o método ficará assim:
+
+![alt text](image-34.png)
 
 
+Se o ID não existe ou é dependente, retornará uma exceção
+
+![alt text](image-35.png)
+
+## Teste carregando usuário (UserService - loadUserByUsername)
+
+Criar uma UserServiceTests com ExtendedWith de novo e trazendo as dependencias: userservice com @InjetectMocks e UserRepository com @Mock.
+
+Método UserService
+
+![alt text](image-36.png)
+
+Podemos criar um existingUsername e nonExistingUsername e um User. Como o método usa uma List<UserDetailsProjection>, também criaremos uma! Iniciar tudo no setUp (pode criar um UserFactory btw).
+
+Lembrar que temos dois tipos de usuário: cliente e admin.
+
+![alt text](image-37.png)
+
+Criar também um UserDetailsFactory para retornar uma lista de UserDetailsProjection. Nela, faremos um pouco diferente das outras factories.
+
+Teremos nosso método de create, mas embaixo (fora do escopo), criaremos uma classe que irá implementar a interface (UserDetailsProjection), veja:
+
+Método create (um para um Client, outro pra Admin e o terceiro para admin e client)
+
+![alt text](image-39.png)
+
+Classe fora do escopo, tudo da UserDetailsProjection, criando um construtor + getters.
+
+![alt text](image-40.png)
+
+Testes
+
+![alt text](image-41.png)
