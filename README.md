@@ -662,3 +662,185 @@ Classe fora do escopo, tudo da UserDetailsProjection, criando um construtor + ge
 Testes
 
 ![alt text](image-41.png)
+
+## Melhorias método autenticated (UserService)
+
+Método 
+
+![alt text](image-42.png)
+
+Faremos o seguinte: o primeiro bloco do Try, tudo que está dentro dele, iremos alocar para uma nova classe chamada "CustomUserUtil" no pacote Util (essa classe será um @Component).
+
+![alt text](image-43.png)
+
+Incluindo no UserService:
+
+Importa o component criado
+
+![alt text](image-44.png)
+
+E coloca no bloco do Try
+
+![alt text](image-45.png)
+
+## Testando método autenticated
+
+### User existe
+
+Como pode observar no método acima, dentro do try temos um cenário do repository executando o findByEmail (passando o username). Precisamos testar, portanto, este cenário em pauta.
+
+Mock
+
+![alt text](image-46.png)
+
+Teste
+
+Precisamo mockar o CustomUserUtil criado anteriormente, para que possamos fazer o teste unitário.
+
+![alt text](image-47.png)
+
+Bom, sempre que queremos MOCKAR algo, usamos o mockito, faremos o seguinte:
+
+Esse mockito é para simular isso aqui:
+
+![alt text](image-48.png)
+
+Ou seja, em um cenário de sucesso, ele retorna um username
+
+![alt text](image-49.png)
+
+### User não existe
+
+![alt text](image-50.png)
+
+## Consultando user logado (getMe)
+
+Método
+
+![alt text](image-51.png)
+
+Teste
+
+### user existe
+
+Precisamos fazer um spy do UserService para que possamos utilizar do método. Caso fizéssemos da forma normal, daria um erro dizendo que o "service" passado no when não é um Mock.
+
+![alt text](image-52.png)
+
+### user não existe
+
+![alt text](image-53.png)
+
+## AuthService - ValidateSelfOrAdmin
+
+É um controle de acesso para determinar se um usuário pode ou não acessar um pedido.
+
+![alt text](image-54.png)
+
+### Deixando o método mais testável
+
+Vamos tirar esse If e melhorar o código.
+
+![alt text](image-55.png)
+
+### Teste
+
+Criar classe AuthServiceTests (@ExtendWith), inserir o AuthService com @InjectMocks. Como a classe usa o UserService, injetar ele com @Mock.
+
+Criar algumas variáveis para o User, para que possamos simular os cenários: admin, selfClient, otherClient e iniciá-las no setUp (utilizando a UserFactory).
+
+![alt text](image-56.png)
+
+A partir disso, temos três cenários para o método acima:
+
+1. Acessando pedido como admin
+
+![alt text](image-57.png)
+
+2. Client acessando o proprio pedido
+
+![alt text](image-58.png)
+
+3. Client acessando o pedido que não é dele (ForbiddenException)
+
+## OrderService
+
+Criar OrderServiceTests, mesma coisa. @ExtendWith, @InjectMocks no OrderService e @Mock no OrderRepository e AuthService.
+
+### findById
+
+Temos duas situações. O pedido pode existir ou não.
+
+Uma outra coisa: esse método usa o validateSelfOrAdmin para validar o acesso aos pedidos. Ou seja, se for admin, pode acessar todos os pedidos, se for client somente os próprios pedidos.
+
+![alt text](image-59.png)
+
+Precisamos criar um ID de order que existe e outro que não existe.
+
+Criar também um Order e um OrderDTO, afinal é o que o metodo retorna (criar um OrderFactory).
+
+Como precisamos validar o acesso aos pedidos, criaremos também os 03 (três) tipos de usuários.
+
+OrderFactory:
+
+![alt text](image-60.png)
+
+Iniciar tudo no setUp + criacao dos cenários:
+
+![alt text](image-61.png)
+
+Métodos
+
+Id exists (Admin logged)
+
+![alt text](image-62.png)
+
+Id Exists (Client logged)
+
+![alt text](image-63.png)
+
+Id Exists (Acessando pedido de outro usuário)
+
+![alt text](image-64.png)
+
+Id não existe (ResourceNotFound)
+
+![alt text](image-65.png)
+
+### Insert
+
+![alt text](image-66.png)
+
+Mockaremos o UserService, o do Product (getReferenceById), save e saveAll.
+
+Adicionar o ProductRepository, OrderItemRepository e UserService com o @Mock.
+
+Criar um existingProductId, nonExistingProductId e um Product utilizando a Factory.
+
+![alt text](image-67.png)
+
+setUp, instanciando os atributos criados + os cenários do getReferenceById.
+
+![alt text](image-68.png)
+
+Inserir no setUp também o save e o saveAll!
+
+![alt text](image-69.png)
+
+### Cenários de sucesso - Usuário autenticado
+
+Com Admin (mockar o autenticated)
+
+![alt text](image-70.png)
+
+Com Client
+
+![alt text](image-71.png)
+
+### Cenários de falha - Usuário não autenticado ou pedido não existe
+
+Se o User não tiver autenticado lançará UserNotFoundException
+
+![alt text](image-72.png)
+
+
